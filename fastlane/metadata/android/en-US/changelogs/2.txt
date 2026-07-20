@@ -1,0 +1,1 @@
+Prepare the first F-Droid release with the complete catalog listing assets.
