@@ -55,8 +55,8 @@ object NoiseEngine {
 
     private var audioThread: Thread? = null
     @Volatile private var running = false
-    @Volatile private var playbackGeneration = 0
-    @Volatile private var timerGeneration = 0
+    private val playbackGenerations = GenerationCounter()
+    private val timerGenerations = GenerationCounter()
     private val lock = Any()
 
     @Volatile private var masterVolume = 0.6f
@@ -120,9 +120,8 @@ object NoiseEngine {
         val generation = synchronized(lock) {
             if (running) return
             running = true
-            playbackGeneration += 1
             fadeGain = 1f
-            playbackGeneration
+            playbackGenerations.advance()
         }
         startAudioThread(generation)
         _state.update { it.copy(isPlaying = true) }
@@ -141,9 +140,8 @@ object NoiseEngine {
     private fun restartTimer(minutes: Int) {
         val generation = synchronized(lock) {
             timerJob?.cancel()
-            timerGeneration += 1
             fadeGain = 1f
-            timerGeneration
+            timerGenerations.advance()
         }
         if (minutes <= 0) {
             _state.update { it.copy(remainingMillis = 0L) }
@@ -151,7 +149,7 @@ object NoiseEngine {
         }
         val endAt = SystemClock.elapsedRealtime() + minutes * 60_000L
         timerJob = engineScope.launch {
-            while (isActive && generation == timerGeneration) {
+            while (isActive && timerGenerations.isCurrent(generation)) {
                 val remaining = endAt - SystemClock.elapsedRealtime()
                 if (remaining <= 0) {
                     if (stopPlayback(expectedTimerGeneration = generation) == null) {
@@ -210,13 +208,13 @@ object NoiseEngine {
 
             if (track.state != AudioTrack.STATE_INITIALIZED) {
                 track.release()
-                if (generation == playbackGeneration) {
+                if (playbackGenerations.isCurrent(generation)) {
                     stopPlayback()
                 }
                 return@Thread
             }
 
-            if (generation != playbackGeneration || !running) {
+            if (!playbackGenerations.isCurrent(generation) || !running) {
                 track.release()
                 return@Thread
             }
@@ -227,12 +225,12 @@ object NoiseEngine {
 
     private fun stopPlayback(expectedTimerGeneration: Int? = null): Thread? {
         val threadToJoin = synchronized(lock) {
-            if (expectedTimerGeneration != null && expectedTimerGeneration != timerGeneration) {
+            if (expectedTimerGeneration != null && !timerGenerations.isCurrent(expectedTimerGeneration)) {
                 return null
             }
             running = false
-            playbackGeneration += 1
-            timerGeneration += 1
+            playbackGenerations.advance()
+            timerGenerations.advance()
             timerJob?.cancel()
             timerJob = null
             val thread = audioThread
@@ -250,14 +248,14 @@ object NoiseEngine {
         // Brown (red) noise running integrator state.
         var brown = 0.0
 
-        if (generation != playbackGeneration || !running) {
+        if (!playbackGenerations.isCurrent(generation) || !running) {
             track.release()
             return
         }
 
         track.play()
         try {
-            while (running && generation == playbackGeneration) {
+            while (running && playbackGenerations.isCurrent(generation)) {
                 val type = noiseType
                 for (i in 0 until framesPerBuffer) {
                     val white = Random.nextDouble(-1.0, 1.0)
@@ -274,8 +272,8 @@ object NoiseEngine {
                     shortBuffer[i] = (clamped * Short.MAX_VALUE).toInt().toShort()
                 }
                 val written = track.write(shortBuffer, 0, framesPerBuffer)
-                if (written <= 0 || generation != playbackGeneration || !running) {
-                    if (generation == playbackGeneration && running) {
+                if (written <= 0 || !playbackGenerations.isCurrent(generation) || !running) {
+                    if (playbackGenerations.isCurrent(generation) && running) {
                         stopPlayback()
                     }
                     break
