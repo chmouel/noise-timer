@@ -66,6 +66,24 @@ keyPassword=yourKeyPassword
 Then `./gradlew assembleRelease` will automatically pick it up and sign
 the release build.
 
+## Releasing
+
+Use `hack/release` from a clean, up-to-date `main` branch:
+
+```bash
+hack/release 1.0.2 "Fix timer handling and improve playback stability."
+```
+
+The script increments `versionCode`, writes the Fastlane changelog, runs the
+tests, lint, and release build, then commits, tags, pushes, and publishes the
+GitHub release. Approve the `release` environment deployment in GitHub Actions
+to build and upload the signed APK.
+
+While the initial F-Droid inclusion merge request is open, the script updates
+that branch. After inclusion, F-Droid reads new tags through its auto-update
+job, so the script does not create duplicate update merge requests. Use
+`hack/release --fdroid-only VERSION` to retry only the F-Droid step.
+
 ## Architecture
 
 - `NoiseEngine` — a singleton object that synthesizes PCM samples on a
