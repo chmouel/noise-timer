@@ -1,10 +1,15 @@
 <resources>
     <string name="app_name">Noise Timer</string>
-    <string name="app_subtitle">Open-source white / pink / brown noise with a sleep timer</string>
+    <string name="app_subtitle">A soft wall of sound between you and the world</string>
 
     <string name="noise_white">White</string>
     <string name="noise_pink">Pink</string>
     <string name="noise_brown">Brown</string>
+    <string name="noise_white_desc">Crisp static</string>
+    <string name="noise_pink_desc">Steady rain</string>
+    <string name="noise_brown_desc">Deep rumble</string>
+    <string name="now_playing">Now playing</string>
+    <string name="paused_hint">Tap to drift away</string>
 
     <string name="play">Play</string>
     <string name="pause">Pause</string>
