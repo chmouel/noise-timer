@@ -6,7 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
@@ -73,12 +75,31 @@ class NoiseService : LifecycleService() {
         // battery and spamming the system.
         NoiseEngine.state.drop(1).distinctUntilChangedBy { it.isPlaying to it.noiseType }.onEach { state ->
             if (state.isPlaying) {
-                NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, buildNotification(state))
+                postNotification(buildNotification(state))
             } else {
                 ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
         }.launchIn(lifecycleScope)
+    }
+
+    /**
+     * Wraps [NotificationManagerCompat.notify] with an explicit runtime
+     * permission check. On API 33+, POST_NOTIFICATIONS is revocable by the
+     * user (they can dismiss the permission dialog MainActivity shows on
+     * launch), so this call must not assume it's granted -- if it isn't,
+     * we just skip updating the notification; playback itself is
+     * unaffected either way.
+     */
+    private fun postNotification(notification: Notification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted = ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.POST_NOTIFICATIONS,
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return
+        }
+        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
