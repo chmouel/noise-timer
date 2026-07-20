@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.max
 import kotlin.random.Random
 
 enum class NoiseType { WHITE, PINK, BROWN }
@@ -149,11 +148,7 @@ object NoiseEngine {
                     break
                 }
                 _state.update { it.copy(remainingMillis = remaining) }
-                fadeGain = if (_state.value.fadeOutEnabled && remaining <= FADE_SECONDS * 1000L) {
-                    max(0f, remaining / (FADE_SECONDS * 1000f))
-                } else {
-                    1f
-                }
+                fadeGain = fadeGainFor(remaining, FADE_SECONDS, _state.value.fadeOutEnabled)
                 delay(200)
             }
         }
@@ -220,14 +215,7 @@ object NoiseEngine {
     private fun runGeneratorLoop(track: AudioTrack, bufferSize: Int) {
         val framesPerBuffer = bufferSize / 2
         val shortBuffer = ShortArray(framesPerBuffer)
-        // Pink noise filter state (Paul Kellet's refined method).
-        var b0 = 0.0
-        var b1 = 0.0
-        var b2 = 0.0
-        var b3 = 0.0
-        var b4 = 0.0
-        var b5 = 0.0
-        var b6 = 0.0
+        val pinkFilter = PinkNoiseFilter()
         // Brown (red) noise running integrator state.
         var brown = 0.0
 
@@ -239,19 +227,9 @@ object NoiseEngine {
                     val white = Random.nextDouble(-1.0, 1.0)
                     val sample = when (type) {
                         NoiseType.WHITE -> white
-                        NoiseType.PINK -> {
-                            b0 = 0.99886 * b0 + white * 0.0555179
-                            b1 = 0.99332 * b1 + white * 0.0750759
-                            b2 = 0.96900 * b2 + white * 0.1538520
-                            b3 = 0.86650 * b3 + white * 0.3104856
-                            b4 = 0.55000 * b4 + white * 0.5329522
-                            b5 = -0.7616 * b5 - white * 0.0168980
-                            val pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362
-                            b6 = white * 0.115926
-                            pink * 0.11
-                        }
+                        NoiseType.PINK -> pinkFilter.next(white)
                         NoiseType.BROWN -> {
-                            brown = (brown + 0.02 * white) / 1.02
+                            brown = nextBrownSample(brown, white)
                             brown * 3.5
                         }
                     }

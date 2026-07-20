@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
@@ -42,6 +43,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -104,7 +108,7 @@ fun NoiseTimerScreen() {
         Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(4.dp))
         Text(
-            "Open-source white / pink / brown noise with a sleep timer",
+            stringResource(R.string.app_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -148,6 +152,9 @@ fun NoiseTimerScreen() {
             Slider(
                 value = state.volume,
                 onValueChange = { v -> NoiseEngine.setVolume(v) },
+                modifier = Modifier.semantics {
+                    contentDescription = "Volume"
+                },
             )
         }
 
@@ -194,11 +201,15 @@ fun NoiseTimerScreen() {
 
             Spacer(Modifier.height(12.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = state.fadeOutEnabled,
-                    onCheckedChange = { checked -> NoiseEngine.setFadeOutEnabled(checked) },
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.toggleable(
+                    value = state.fadeOutEnabled,
+                    role = Role.Checkbox,
+                    onValueChange = { checked -> NoiseEngine.setFadeOutEnabled(checked) },
+                ),
+            ) {
+                Checkbox(checked = state.fadeOutEnabled, onCheckedChange = null)
                 Text(stringResource(R.string.fade_out_label))
             }
 
