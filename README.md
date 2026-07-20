@@ -5,6 +5,11 @@ with an optional sleep timer (with fade-out) — a free alternative to the
 various paid "noise + sleep timer" apps on the Play Store. No accounts,
 no ads, no network access, no tracking.
 
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="280" alt="Noise Timer home screen">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="280" alt="Noise Timer playing brown noise with a sleep timer set">
+</p>
+
 ## Features
 
 - White, pink, and brown noise, generated in real time (not looped
