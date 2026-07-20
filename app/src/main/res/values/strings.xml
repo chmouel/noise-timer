@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Noise Timer</string>
+
+    <string name="noise_white">White</string>
+    <string name="noise_pink">Pink</string>
+    <string name="noise_brown">Brown</string>
+
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+
+    <string name="volume">Volume</string>
+    <string name="sleep_timer">Sleep timer</string>
+    <string name="timer_off">Off</string>
+    <string name="fade_out_label">Fade out over last 20s</string>
+    <string name="no_timer">No timer</string>
+    <string name="custom_minutes_hint">Custom minutes</string>
+    <string name="set">Set</string>
+
+    <string name="notification_channel_name">Noise playback</string>
+    <string name="notification_playing">Playing %1$s noise</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple sound-wave / equalizer glyph representing noise -->
+    <path
+        android:fillColor="#7FB2FF"
+        android:pathData="M34,40 L42,40 L42,68 L34,68 Z" />
+    <path
+        android:fillColor="#A0C8FF"
+        android:pathData="M50,26 L58,26 L58,82 L50,82 Z" />
+    <path
+        android:fillColor="#C9E0FF"
+        android:pathData="M66,46 L74,46 L74,62 L66,62 Z" />
+</vector>
