@@ -1,0 +1,5 @@
+First public release.
+
+• White, pink, and brown noise
+• Sleep timer with optional fade-out
+• Background playback controls

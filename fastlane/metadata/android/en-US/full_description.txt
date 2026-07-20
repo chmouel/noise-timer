@@ -1,0 +1,14 @@
+Noise Timer is a simple, private companion for sleep, focus, and quiet moments.
+
+Choose white, pink, or brown noise, adjust the volume, and let the sound play in the background. Set a sleep timer from a quick preset or choose your own duration. An optional fade-out gently lowers the volume during the final 20 seconds.
+
+Features:
+
+• White, pink, and brown noise generated in real time
+• Adjustable playback volume
+• Sleep timer with presets and custom durations
+• Optional fade-out before the timer ends
+• Background playback controls in the notification
+• Remembers your preferred settings
+
+Noise Timer has no ads, accounts, trackers, or network access.
