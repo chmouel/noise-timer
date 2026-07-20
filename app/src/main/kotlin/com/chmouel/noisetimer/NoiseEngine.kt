@@ -55,6 +55,9 @@ object NoiseEngine {
 
     private var audioThread: Thread? = null
     @Volatile private var running = false
+    @Volatile private var playbackGeneration = 0
+    @Volatile private var timerGeneration = 0
+    private val lock = Any()
 
     @Volatile private var masterVolume = 0.6f
     @Volatile private var fadeGain = 1f
@@ -114,37 +117,46 @@ object NoiseEngine {
     }
 
     fun play() {
-        if (running) return
-        running = true
-        fadeGain = 1f
-        startAudioThread()
+        val generation = synchronized(lock) {
+            if (running) return
+            running = true
+            playbackGeneration += 1
+            fadeGain = 1f
+            playbackGeneration
+        }
+        startAudioThread(generation)
         _state.update { it.copy(isPlaying = true) }
         restartTimer(_state.value.timerMinutes)
     }
 
     fun pause() {
-        stopAudioThread()
-        timerJob?.cancel()
-        timerJob = null
-        _state.update { it.copy(isPlaying = false, remainingMillis = 0L) }
+        val threadToJoin = stopPlayback()
+        if (threadToJoin != null && threadToJoin !== Thread.currentThread()) {
+            threadToJoin.join(500)
+        }
     }
 
     fun stop() = pause()
 
     private fun restartTimer(minutes: Int) {
-        timerJob?.cancel()
-        fadeGain = 1f
+        val generation = synchronized(lock) {
+            timerJob?.cancel()
+            timerGeneration += 1
+            fadeGain = 1f
+            timerGeneration
+        }
         if (minutes <= 0) {
             _state.update { it.copy(remainingMillis = 0L) }
             return
         }
         val endAt = SystemClock.elapsedRealtime() + minutes * 60_000L
         timerJob = engineScope.launch {
-            while (isActive) {
+            while (isActive && generation == timerGeneration) {
                 val remaining = endAt - SystemClock.elapsedRealtime()
                 if (remaining <= 0) {
-                    _state.update { it.copy(remainingMillis = 0L) }
-                    pause()
+                    if (stopPlayback(expectedTimerGeneration = generation) == null) {
+                        break
+                    }
                     break
                 }
                 _state.update { it.copy(remainingMillis = remaining) }
@@ -154,7 +166,7 @@ object NoiseEngine {
         }
     }
 
-    private fun startAudioThread() {
+    private fun startAudioThread(generation: Int) {
         // All AudioTrack setup (including the native sample-rate/buffer-size
         // queries and AudioTrack.Builder().build()) must happen off the
         // caller's thread. On some devices/emulators these calls can block
@@ -198,30 +210,54 @@ object NoiseEngine {
 
             if (track.state != AudioTrack.STATE_INITIALIZED) {
                 track.release()
-                running = false
+                if (generation == playbackGeneration) {
+                    stopPlayback()
+                }
                 return@Thread
             }
 
-            runGeneratorLoop(track, bufferSize)
+            if (generation != playbackGeneration || !running) {
+                track.release()
+                return@Thread
+            }
+
+            runGeneratorLoop(track, bufferSize, generation)
         }.apply { start() }
     }
 
-    private fun stopAudioThread() {
-        running = false
-        audioThread?.join(500)
-        audioThread = null
+    private fun stopPlayback(expectedTimerGeneration: Int? = null): Thread? {
+        val threadToJoin = synchronized(lock) {
+            if (expectedTimerGeneration != null && expectedTimerGeneration != timerGeneration) {
+                return null
+            }
+            running = false
+            playbackGeneration += 1
+            timerGeneration += 1
+            timerJob?.cancel()
+            timerJob = null
+            val thread = audioThread
+            audioThread = null
+            thread
+        }
+        _state.update { it.copy(isPlaying = false, remainingMillis = 0L) }
+        return threadToJoin
     }
 
-    private fun runGeneratorLoop(track: AudioTrack, bufferSize: Int) {
+    private fun runGeneratorLoop(track: AudioTrack, bufferSize: Int, generation: Int) {
         val framesPerBuffer = bufferSize / 2
         val shortBuffer = ShortArray(framesPerBuffer)
         val pinkFilter = PinkNoiseFilter()
         // Brown (red) noise running integrator state.
         var brown = 0.0
 
+        if (generation != playbackGeneration || !running) {
+            track.release()
+            return
+        }
+
         track.play()
         try {
-            while (running) {
+            while (running && generation == playbackGeneration) {
                 val type = noiseType
                 for (i in 0 until framesPerBuffer) {
                     val white = Random.nextDouble(-1.0, 1.0)
@@ -237,11 +273,22 @@ object NoiseEngine {
                     val clamped = (sample * gain).coerceIn(-1.0, 1.0)
                     shortBuffer[i] = (clamped * Short.MAX_VALUE).toInt().toShort()
                 }
-                track.write(shortBuffer, 0, framesPerBuffer)
+                val written = track.write(shortBuffer, 0, framesPerBuffer)
+                if (written <= 0 || generation != playbackGeneration || !running) {
+                    if (generation == playbackGeneration && running) {
+                        stopPlayback()
+                    }
+                    break
+                }
             }
         } finally {
             track.stop()
             track.release()
+            synchronized(lock) {
+                if (audioThread === Thread.currentThread()) {
+                    audioThread = null
+                }
+            }
         }
     }
 }
