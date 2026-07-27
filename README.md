@@ -23,6 +23,10 @@ No accounts, no ads, no network access, no tracking.
 - Settings (noise type, volume, timer, fade-out) are remembered between
   launches.
 
+## Installation
+
+Download the APK on the releasses or better install nad keep it updated via [f-droid](https://f-droid.org/en/packages/com.chmouel.noisetimer/)
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
