@@ -4,7 +4,8 @@ A small, open-source Android app that plays white / pink / brown noise
 with an optional sleep timer (with fade-out).
 
 A free alternative to the various paid "noise + sleep timer" apps on the Play Store. 
-No accounts, no ads, no network access, no tracking.
+No accounts, no ads, no network access, no tracking. It is by design, 
+super simple and will be kept it that way.
 
 <p align="center">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="280" alt="Noise Timer home screen">
