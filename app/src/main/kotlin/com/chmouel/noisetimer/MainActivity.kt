@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -39,11 +40,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -103,11 +106,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NoiseTimerTheme {
+                var showAbout by rememberSaveable { mutableStateOf(false) }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    NoiseTimerScreen()
+                    if (showAbout) {
+                        AboutScreen(onBack = { showAbout = false })
+                    } else {
+                        NoiseTimerScreen(onOpenAbout = { showAbout = true })
+                    }
                 }
             }
         }
@@ -136,7 +144,7 @@ private fun NoiseType.accent(): Color = when (this) {
 }
 
 @Composable
-fun NoiseTimerScreen() {
+fun NoiseTimerScreen(onOpenAbout: () -> Unit) {
     val context = LocalContext.current
     val state by NoiseEngine.state.collectAsStateWithLifecycle()
     var showTimerSheet by rememberSaveable { mutableStateOf(false) }
@@ -170,7 +178,27 @@ fun NoiseTimerScreen() {
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
+                Box(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 48.dp),
+                    )
+                    IconButton(
+                        onClick = onOpenAbout,
+                        modifier = Modifier.align(Alignment.CenterEnd).size(48.dp),
+                    ) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = stringResource(R.string.about_open),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
                 Spacer(Modifier.height(28.dp))
                 Surface(
                     color = MaterialTheme.colorScheme.surface,

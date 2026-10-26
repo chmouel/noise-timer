@@ -40,4 +40,23 @@
 
     <string name="notification_channel_name">Noise playback</string>
     <string name="notification_playing">Playing %1$s noise</string>
+
+    <string name="about_title">About</string>
+    <string name="about_open">About Noise Timer</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="about_tagline">White, pink and brown noise for rest and sleep.</string>
+    <string name="about_description">Generated on your device, with a sleep timer and optional fade-out. No ads, tracking or network access.</string>
+    <string name="about_author">Made with \u2763\ufe0f by Chmouel Boudjnah</string>
+    <string name="about_sponsor">Support development</string>
+    <string name="about_source">Source code</string>
+    <string name="about_licences">Open-source licences</string>
+    <string name="about_star_prompt">Enjoying Noise Timer? Consider giving it a star on GitHub \u2b50\ufe0f</string>
+    <string name="about_version">Version %1$s (%2$d)</string>
+    <string name="about_licence_line">Noise Timer is free software under the MIT licence.</string>
+    <string name="about_licences_intro">Noise Timer uses these open-source components:</string>
+    <string name="about_components">AndroidX / Jetpack Compose\nMaterial Icons\nKotlin and kotlinx.coroutines</string>
+    <string name="about_apache_licence" translatable="false">Apache License 2.0</string>
+    <string name="about_app_licence">%1$s — MIT License</string>
+    <string name="about_no_browser">No app available to open this link.</string>
 </resources>
