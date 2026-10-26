@@ -8,8 +8,8 @@ No accounts, no ads, no network access, no tracking. It is by design,
 super simple and will be kept it that way.
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="280" alt="Noise Timer home screen">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="280" alt="Noise Timer playing brown noise with a sleep timer set">
+  <img src="docs/images/noise-timer-home.png" width="280" alt="Noise Timer ready to play white noise with a five-minute timer">
+  <img src="docs/images/noise-timer-pink-paused.png" width="280" alt="Noise Timer playing pink noise with the sleep timer off">
 </p>
 
 ## Features
