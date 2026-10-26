@@ -9,6 +9,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +66,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
@@ -178,28 +181,53 @@ fun NoiseTimerScreen(onOpenAbout: () -> Unit) {
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    contentAlignment = Alignment.Center,
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = accent.copy(alpha = 0.10f),
+                    shape = RoundedCornerShape(24.dp),
                 ) {
-                    Text(
-                        stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 48.dp),
-                    )
-                    IconButton(
-                        onClick = onOpenAbout,
-                        modifier = Modifier.align(Alignment.CenterEnd).size(48.dp),
+                    Row(
+                        modifier = Modifier.padding(start = 20.dp, end = 8.dp, top = 20.dp, bottom = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
                     ) {
-                        Icon(
-                            Icons.Outlined.Info,
-                            contentDescription = stringResource(R.string.about_open),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        Canvas(Modifier.size(width = 36.dp, height = 40.dp)) {
+                            val heights = listOf(0.25f, 0.55f, 0.9f, 0.65f, 0.35f)
+                            heights.forEachIndexed { index, height ->
+                                val x = size.width * (index + 0.5f) / heights.size
+                                drawLine(
+                                    color = accent,
+                                    start = Offset(x, size.height * (1f - height) / 2f),
+                                    end = Offset(x, size.height * (1f + height) / 2f),
+                                    strokeWidth = 3.dp.toPx(),
+                                    cap = StrokeCap.Round,
+                                )
+                            }
+                        }
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(
+                                stringResource(R.string.app_name),
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                            Text(
+                                stringResource(R.string.banner_subtitle),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        IconButton(onClick = onOpenAbout, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                Icons.Outlined.Info,
+                                contentDescription = stringResource(R.string.about_open),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(20.dp))
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(22.dp),
