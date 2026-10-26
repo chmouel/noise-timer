@@ -1,15 +1,9 @@
 <resources>
     <string name="app_name">Noise Timer</string>
-    <string name="app_subtitle">A soft wall of sound between you and the world</string>
 
     <string name="noise_white">White</string>
     <string name="noise_pink">Pink</string>
     <string name="noise_brown">Brown</string>
-    <string name="noise_white_desc">Crisp static</string>
-    <string name="noise_pink_desc">Steady rain</string>
-    <string name="noise_brown_desc">Deep rumble</string>
-    <string name="now_playing">Now playing</string>
-    <string name="paused_hint">Tap to drift away</string>
 
     <string name="play">Play</string>
     <string name="pause">Pause</string>
@@ -19,9 +13,30 @@
     <string name="sleep_timer">Sleep timer</string>
     <string name="timer_off">Off</string>
     <string name="fade_out_label">Fade out over last 20s</string>
-    <string name="no_timer">No timer</string>
     <string name="custom_minutes_hint">Custom minutes</string>
-    <string name="set">Set</string>
+    <string name="set_timer">Set timer</string>
+    <string name="cancel">Cancel</string>
+    <string name="timer_custom">Custom</string>
+    <string name="timer_status_off">Timer off</string>
+    <string name="edit_timer">Edit sleep timer</string>
+    <string name="timer_minutes_short">%1$d min</string>
+    <string name="custom_minutes_range">Enter 1–999 minutes.</string>
+    <string name="timer_restart_notice">Changing the duration restarts the timer.</string>
+    <string name="timer_remaining">%1$s remaining</string>
+    <string name="timer_duration">%1$s configured</string>
+    <string name="duration_separator">", "</string>
+    <plurals name="duration_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="duration_seconds">
+        <item quantity="one">%d second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
 
     <string name="notification_channel_name">Noise playback</string>
     <string name="notification_playing">Playing %1$s noise</string>

@@ -9,12 +9,19 @@ import androidx.compose.runtime.Composable
 private val DarkColors = darkColorScheme(
     primary = Primary,
     onPrimary = OnPrimary,
+    secondary = Primary,
+    onSecondary = OnPrimary,
+    secondaryContainer = Primary,
+    onSecondaryContainer = OnPrimary,
     background = Background,
     onBackground = OnBackground,
     surface = Surface,
     onSurface = OnBackground,
     surfaceVariant = Surface,
+    surfaceContainerHighest = Surface,
     onSurfaceVariant = Muted,
+    outline = Muted,
+    outlineVariant = Muted,
 )
 
 @Composable
