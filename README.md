@@ -28,6 +28,17 @@ super simple and will be kept it that way.
 
 Download the APK on the releasses or better install nad keep it updated via [f-droid](https://f-droid.org/en/packages/com.chmouel.noisetimer/)
 
+## Author
+
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤️-ff69b4?style=for-the-badge&logo=github)](https://github.com/sponsors/chmouel)
+
+### Chmouel Boudjnah
+
+- Fediverse - <[@chmouel@chmouel.com](https://fosstodon.org/@chmouel)>
+- Twitter - <[@chmouel](https://twitter.com/chmouel)>
+- Blog  - <[https://blog.chmouel.com](https://blog.chmouel.com)>
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE).
+
